@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		D339D3AB1CBA9624002488F6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D339D3AA1CBA9624002488F6 /* main.m */; };
+		D339D3B41CBA9664002488F6 /* ISLa.m in Sources */ = {isa = PBXBuildFile; fileRef = D339D3B21CBA9664002488F6 /* ISLa.m */; };
+		D339D3B71CBAB5D4002488F6 /* ISTabl.m in Sources */ = {isa = PBXBuildFile; fileRef = D339D3B61CBAB5D4002488F6 /* ISTabl.m */; };
+		D35E62F31CCFB9C200ECF07E /* ISTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D35E62F21CCFB9C200ECF07E /* ISTest.m */; };
+		D367644F1DC6099D009EA350 /* ISCel.m in Sources */ = {isa = PBXBuildFile; fileRef = D367644E1DC6099D009EA350 /* ISCel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +29,15 @@
 /* Begin PBXFileReference section */
 		D339D3A71CBA9624002488F6 /* UTSdz2v2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = UTSdz2v2; sourceTree = BUILT_PRODUCTS_DIR; };
 		D339D3AA1CBA9624002488F6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D339D3B11CBA9664002488F6 /* ISLa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISLa.h; sourceTree = "<group>"; };
+		D339D3B21CBA9664002488F6 /* ISLa.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISLa.m; sourceTree = "<group>"; };
+		D339D3B31CBA9664002488F6 /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
+		D339D3B51CBAB5D4002488F6 /* ISTabl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTabl.h; sourceTree = "<group>"; };
+		D339D3B61CBAB5D4002488F6 /* ISTabl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISTabl.m; sourceTree = "<group>"; };
+		D35E62F11CCFB9C200ECF07E /* ISTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTest.h; sourceTree = "<group>"; };
+		D35E62F21CCFB9C200ECF07E /* ISTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISTest.m; sourceTree = "<group>"; };
+		D367644D1DC6099D009EA350 /* ISCel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISCel.h; sourceTree = "<group>"; };
+		D367644E1DC6099D009EA350 /* ISCel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ISCel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +71,15 @@
 			isa = PBXGroup;
 			children = (
 				D339D3AA1CBA9624002488F6 /* main.m */,
+				D35E62F11CCFB9C200ECF07E /* ISTest.h */,
+				D35E62F21CCFB9C200ECF07E /* ISTest.m */,
+				D339D3B11CBA9664002488F6 /* ISLa.h */,
+				D339D3B21CBA9664002488F6 /* ISLa.m */,
+				D367644D1DC6099D009EA350 /* ISCel.h */,
+				D367644E1DC6099D009EA350 /* ISCel.m */,
+				D339D3B31CBA9664002488F6 /* matrix.h */,
+				D339D3B51CBAB5D4002488F6 /* ISTabl.h */,
+				D339D3B61CBAB5D4002488F6 /* ISTabl.m */,
 			);
 			path = UTSdz2v2;
 			sourceTree = "<group>";
@@ -118,7 +140,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D339D3B41CBA9664002488F6 /* ISLa.m in Sources */,
+				D339D3B71CBAB5D4002488F6 /* ISTabl.m in Sources */,
 				D339D3AB1CBA9624002488F6 /* main.m in Sources */,
+				D35E62F31CCFB9C200ECF07E /* ISTest.m in Sources */,
+				D367644F1DC6099D009EA350 /* ISCel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +170,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
+				"COPY_HEADERS_UNIFDEF_FLAGS[sdk=*]" = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -209,14 +236,18 @@
 		D339D3AF1CBA9624002488F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
 		D339D3B01CBA9624002488F6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};
@@ -239,6 +270,7 @@
 				D339D3B01CBA9624002488F6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
