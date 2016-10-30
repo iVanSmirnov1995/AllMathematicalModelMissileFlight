@@ -50,6 +50,9 @@
 @property(assign,nonatomic)struct ISVector mZ_angle;
 @property(assign,nonatomic)struct ISVector mZ_delta;
 
+@property(assign,nonatomic)struct ISVector Y_angle;
+@property(assign,nonatomic)struct ISVector Y_delta;
+
 
 
 -(void)startX0:(CGFloat)x0 H0:(CGFloat)H0 vxo:(CGFloat)v0 TT0:(CGFloat)TT0 shag:(CGFloat)dt;

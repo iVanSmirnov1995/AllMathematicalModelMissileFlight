@@ -81,8 +81,22 @@ const CGFloat g=9.80665;
         CGFloat a11=-(self.mW.z*self.l)/(self.I.z*VectorABS(self.vNormSist));
         CGFloat a12=-(self.mZ_angle.x)/(self.I.z);
         CGFloat a13=-(self.mZ_delta.x)/(self.I.z);//?
-        CGFloat a42=-(self.mW.z*self.l)/(self.I.z*VectorABS(self.vNormSist));
-        CGFloat a43=-(self.mW.z*self.l)/(self.I.z*VectorABS(self.vNormSist));
+        CGFloat a42=(self.Y_angle.x)/(self.m0*VectorABS(self.vNormSist));
+        CGFloat a43=(self.Y_delta.x)/(self.m0*VectorABS(self.vNormSist));
+        
+        CGFloat b11=-(self.mW.y*self.l)/(self.I.y*VectorABS(self.vNormSist));
+        CGFloat b12=-(self.mZ_angle.y)/(self.I.y);
+        CGFloat b13=-(self.mZ_delta.y)/(self.I.y);//?
+        CGFloat b42=(self.Y_angle.y)/(self.m0*VectorABS(self.vNormSist));
+        CGFloat b43=(self.Y_delta.y)/(self.m0*VectorABS(self.vNormSist));
+        
+        CGFloat Kv=(a11*a43-a13*a42)/(a12+a11*a42);
+        CGFloat Kn=(b11*b43-b13*b42)/(b12+b11*b42);
+        CGFloat kccV=0.95;
+        CGFloat kccn=0.95;
+        self.delta=ISVecrorMake(0,Kv*self.lineVizAnrl.x+kccV*self.anglesSVnorm.y,
+                                Kn*self.lineVizAnrl.y+kccn*self.anglesSVnorm.x);
+       // NSLog(@"%f %f",self.delta.x,self.delta.y);
         
         [self.delegat parametrsdidSelected:self];
         
@@ -116,10 +130,16 @@ const CGFloat g=9.80665;
     CGFloat sm=M_PI*pow(self.dm, 2)/4;
     CGFloat q=ro*pow(v, 2)/2;
     
+    
     struct ISVector F=ISVecrorMake(-C.x*q*sm, C.y*q*sm, C.z*q*sm);
     struct ISVector Gg=ISVecrorMake(0, -g*self.m0, 0);
     struct ISVector Fg=Martix3multiplyVector(matPerSvNorm, F);
     struct ISVector vItog=VectorMultiplyNumber(VectorPlusVector(Fg, Gg), 1/self.m0);
+    
+   // self.Y_angle=ISVecrorMake(F.y/self.anglesSKsvaz.x,F.y/self.anglesSKsvaz.y,0);
+    self.Y_angle=ISVecrorMake(F.y,F.y,0);
+   // self.Y_delta=ISVecrorMake(F.y/self.delta.z,F.y/self.delta.y,0);
+     self.Y_delta=ISVecrorMake(F.y,F.y,0);
     
     return vItog;
     
