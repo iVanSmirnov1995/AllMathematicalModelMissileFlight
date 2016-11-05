@@ -57,12 +57,16 @@ const CGFloat g=9.80665;
         struct ISVector dr =VectorMultiplyNumber([self coordinats], dt);
         struct ISVector4 dRg=Vector4MultiplyNumber([self dRadrigoGamelton], dt);
         
+        struct ISVector oldVizAnrl=[self solveLinVizAngl];
+        
         self.vNormSist=VectorPlusVector(self.vNormSist, dv);
         self.w=VectorPlusVector(self.w, dw);
         self.coordinat=VectorPlusVector(self.coordinat, dr);
         self.radrigaGm=[self radrigoGameltonInitAngle:self.anglesSVnorm];
         self.radrigaGm=Vector4PlusVector4(self.radrigaGm, dRg);
         self.radrigaGm=Vector4Normir(self.radrigaGm);
+        struct ISVector dSVvNormDt=VectorMultiplyNumber(VectorMinVector([self angleByRG:self.radrigaGm],self.anglesSVnorm),1/dt);
+        
         self.anglesSVnorm=[self angleByRG:self.radrigaGm];
         
         self.TTandPsi=ISVecrorMake(asin(self.vNormSist.y/VectorABS(self.vNormSist)),
@@ -74,8 +78,15 @@ const CGFloat g=9.80665;
                    pow(self.cel.coordinat.y-self.coordinat.y, 2)+
                    pow(self.cel.coordinat.z-self.coordinat.z, 2), 0.5f);
         
-        self.lineVizAnrl=ISVecrorMake(asin((self.cel.coordinat.y-self.coordinat.y)/self.r),
-                                      -atan((self.cel.coordinat.z-self.coordinat.z)/self.r), 0);
+        struct ISVector newVizAnrl=[self solveLinVizAngl];
+
+        
+        
+        struct ISVector dLinAngDt=VectorMultiplyNumber(VectorMinVector(newVizAnrl, oldVizAnrl), 1/dt);
+        
+        
+        
+        
         
 #pragma mark-rasch abc
         CGFloat a11=-(self.mW.z*self.l)/(self.I.z*VectorABS(self.vNormSist));
@@ -94,10 +105,15 @@ const CGFloat g=9.80665;
         CGFloat Kn=(b11*b43-b13*b42)/(b12+b11*b42);
         CGFloat kccV=0.95;
         CGFloat kccn=0.95;
-        self.delta=ISVecrorMake(0,Kv*self.lineVizAnrl.x+kccV*self.anglesSVnorm.y,
-                                Kn*self.lineVizAnrl.y+kccn*self.anglesSVnorm.x);
-       // NSLog(@"%f %f",self.delta.x,self.delta.y);
         
+       // NSLog(@"%f %f",Kn,Kv);
+       // VectorPrint(dLinAngDt);
+       // VectorPrint(dSVvNormDt);
+        
+        self.delta=ISVecrorMake(0,Kv*dLinAngDt.x+kccV*dSVvNormDt.y,
+                                Kn*dLinAngDt.y+kccn*dSVvNormDt.x);
+       // NSLog(@"%f %f",self.delta.y*180/M_PI,self.delta.z*180/M_PI);
+       // NSLog(@"%f",dLinAngDt.y);
         [self.delegat parametrsdidSelected:self];
         
     }
@@ -123,23 +139,31 @@ const CGFloat g=9.80665;
     struct ISVector vSVsist=Martix3multiplyVector(Martix3Transp(matPerSvNorm), self.vNormSist);
     self.anglesSKsvaz=ISVecrorMake(-atan(vSVsist.y/vSVsist.x),asin(vSVsist.z/VectorABS(vSVsist)), 0);
     struct ISVector C=ISVecrorMake(Cx,
-                                   Cy_alfa*self.anglesSKsvaz.x+[self Cy_deltaM:M alfa:self.anglesSKsvaz.x]*self.delta.z,
-                                   -Cy_alfa*self.anglesSKsvaz.y+[self Cz_deltaM:M alfa:self.anglesSKsvaz.y]*self.delta.y);
+                                   Cy_alfa*self.anglesSKsvaz.x+[self Cy_deltaM:M alfa:self.anglesSKsvaz.x]*self.delta.y,
+                                   -Cy_alfa*self.anglesSKsvaz.y+[self Cz_deltaM:M alfa:self.anglesSKsvaz.y]*self.delta.z);
+    
     
     CGFloat ro=[[[ISTabl alloc]h:self.coordinat.y type:geomertrik] ro];
     CGFloat sm=M_PI*pow(self.dm, 2)/4;
     CGFloat q=ro*pow(v, 2)/2;
     
+    CGFloat y_alfa=Cy_alfa*q*sm;
+    CGFloat y_beta=-Cy_alfa*q*sm;
+    CGFloat y_deltaV=[self Cy_deltaM:M alfa:self.anglesSKsvaz.x]*q*sm;
+    CGFloat y_deltaN=[self Cz_deltaM:M alfa:self.anglesSKsvaz.y]*q*sm;
+    
+    
     
     struct ISVector F=ISVecrorMake(-C.x*q*sm, C.y*q*sm, C.z*q*sm);
+    
     struct ISVector Gg=ISVecrorMake(0, -g*self.m0, 0);
     struct ISVector Fg=Martix3multiplyVector(matPerSvNorm, F);
     struct ISVector vItog=VectorMultiplyNumber(VectorPlusVector(Fg, Gg), 1/self.m0);
     
    // self.Y_angle=ISVecrorMake(F.y/self.anglesSKsvaz.x,F.y/self.anglesSKsvaz.y,0);
-    self.Y_angle=ISVecrorMake(F.y,F.y,0);
+    self.Y_angle=ISVecrorMake(y_alfa,y_beta,0);
    // self.Y_delta=ISVecrorMake(F.y/self.delta.z,F.y/self.delta.y,0);
-     self.Y_delta=ISVecrorMake(F.y,F.y,0);
+     self.Y_delta=ISVecrorMake(y_deltaV,y_deltaN,0);
     
     return vItog;
     
@@ -164,8 +188,8 @@ const CGFloat g=9.80665;
                                0);
     
     CGFloat mx=(mW.x*_l/v)*self.w.x;
-    CGFloat my=(mW.y*_l/v)*self.w.y+My_beta*self.anglesSKsvaz.y+[self My_deltaM:Max betta:self.anglesSKsvaz.y]*self.delta.y;
-    CGFloat mz=(mW.z*_l/v)*self.w.z+Mz_alf*self.anglesSKsvaz.x+[self Mz_deltaM:Max alfa:self.anglesSKsvaz.x]*self.delta.z;
+    CGFloat my=(mW.y*_l/v)*self.w.y+My_beta*self.anglesSKsvaz.y+[self My_deltaM:Max betta:self.anglesSKsvaz.y]*self.delta.z;//?
+    CGFloat mz=(mW.z*_l/v)*self.w.z+Mz_alf*self.anglesSKsvaz.x+[self Mz_deltaM:Max alfa:self.anglesSKsvaz.x]*self.delta.y;
     
     struct ISVector m=ISVecrorMake(mx, my, mz);
     CGFloat ro=[[[ISTabl alloc]h:self.coordinat.y type:geomertrik] ro];
@@ -218,6 +242,22 @@ const CGFloat g=9.80665;
                                  cosl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
                                  cosl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)-
                                  sinl(v.x/2)*cosl(v.y/2)*sinl(v.z/2));
+    
+    return vItog;
+    
+}
+
+
+-(struct ISVector) solveLinVizAngl
+
+{
+    
+    CGFloat r=pow(pow(self.cel.coordinat.x-self.coordinat.x, 2)+
+                  pow(self.cel.coordinat.y-self.coordinat.y, 2)+
+                  pow(self.cel.coordinat.z-self.coordinat.z, 2), 0.5f);
+    struct ISVector vItog=ISVecrorMake(asin((self.cel.coordinat.y-self.coordinat.y)/r),
+                                            -atan((self.cel.coordinat.z-self.coordinat.z)/r), 0);
+    
     
     return vItog;
     

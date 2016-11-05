@@ -42,7 +42,7 @@
 
 
 @property(assign,nonatomic)struct ISVector delta;
-@property(assign,nonatomic)struct ISVector lineVizAnrl;
+//@property(assign,nonatomic)struct ISVector lineVizAnrl;
 @property(assign,nonatomic)CGFloat r;
 @property(assign,nonatomic)struct ISVector kSS;
 @property(assign,nonatomic)struct ISVector kn;

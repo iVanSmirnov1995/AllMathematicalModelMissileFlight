@@ -52,6 +52,7 @@ CG_INLINE void Vector4Print(struct ISVector4 v);
 CG_INLINE struct ISVector4 Vector4MultiplyNumber(struct ISVector4 v,CGFloat x);
 CG_INLINE CGFloat Vector4ABS(struct ISVector4 v);
 CG_INLINE struct ISVector4 Vector4Normir(struct ISVector4 v);
+CG_INLINE struct ISVector VectorMinVector(struct ISVector v1,struct ISVector v2);
 
 
 struct ISVector4 Vector4PlusVector4(struct ISVector4 v1,struct ISVector4 v2){
@@ -162,6 +163,18 @@ struct ISVector VectorPlusVector(struct ISVector v1,struct ISVector v2){
     
     return finVect;
 }
+
+struct ISVector VectorMinVector(struct ISVector v1,struct ISVector v2){
+    
+    struct ISVector finVect;
+    finVect.x=v1.x-v2.x;
+    finVect.y=v1.y-v2.y;
+    finVect.z=v1.z-v2.z;
+    
+    return finVect;
+}
+
+
 
 struct ISVector VectorMultiplyNumber(struct ISVector v,CGFloat x){
     
