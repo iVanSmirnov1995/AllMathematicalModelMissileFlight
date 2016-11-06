@@ -13,6 +13,8 @@
 
 @property(assign,nonatomic)struct ISVector coordinat;
 
--(ISCel*)createCelX:(CGFloat)x y:(CGFloat)y z:(CGFloat)z;
+//-(ISCel*)createCelX:(CGFloat)x y:(CGFloat)y z:(CGFloat)z;
+
+//- (instancetype)createCelX:(CGFloat)x y:(CGFloat)y z:(CGFloat)z;
 
 @end

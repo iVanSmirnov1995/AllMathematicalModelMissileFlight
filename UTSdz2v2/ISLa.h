@@ -19,7 +19,11 @@
 
 
 -(ISLa*)createLaM0:(CGFloat)m0 Ix:(CGFloat)Ix Iy:(CGFloat)Iy Iz:(CGFloat)Iz
-                        l:(CGFloat)l dm:(CGFloat)dm;
+                 l:(CGFloat)l dm:(CGFloat)dm Kfi:(CGFloat)Kfi Kpsi:(CGFloat)Kpsi;
+
+
+@property(assign,nonatomic)CGFloat Kfi;
+@property(assign,nonatomic)CGFloat Kpsi;
 
 @property(strong,nonatomic)ISCel* cel;
 

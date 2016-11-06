@@ -21,7 +21,7 @@ const CGFloat g=9.80665;
 
 
 -(instancetype)createLaM0:(CGFloat)m0 Ix:(CGFloat)Ix Iy:(CGFloat)Iy Iz:(CGFloat)Iz
-                        l:(CGFloat)l dm:(CGFloat)dm{
+                        l:(CGFloat)l dm:(CGFloat)dm Kfi:(CGFloat)Kfi Kpsi:(CGFloat)Kpsi{
     
     ISLa* la=[[ISLa alloc]init];
     la.m0=m0;
@@ -29,12 +29,17 @@ const CGFloat g=9.80665;
     la.l=l;
     la.dm=dm;
     
+    la.Kfi=Kfi;
+    la.Kpsi=Kpsi;
+    
     return la;
 }
 
 
 -(void)startX0:(CGFloat)x0 H0:(CGFloat)H0 vxo:(CGFloat)v0 TT0:(CGFloat)TT0 shag:(CGFloat)dt{
     
+    
+    //NSLog(@"%f",self.cel.coordinat.x);
     self.anglesSVnorm=ISVecrorMake(0, 0, 0);
     self.vSkorSist=ISVecrorMake(v0, 0, 0);
     struct ISMartix3 matPerSKsv=[self matPerSKsv:self.anglesSKsvaz];
@@ -49,9 +54,10 @@ const CGFloat g=9.80665;
     self.radrigaGm=Vector4Normir(self.radrigaGm);
     
      [self.delegat parametrsdidSelected:self];
+    int i=0;
     
     while (self.coordinat.y>0) {
-        
+        i++;
         struct ISVector dv=VectorMultiplyNumber([self translationalMovie], dt);
         struct ISVector dw =VectorMultiplyNumber([self rotaryMovie], dt);
         struct ISVector dr =VectorMultiplyNumber([self coordinats], dt);
@@ -80,7 +86,7 @@ const CGFloat g=9.80665;
         
         struct ISVector newVizAnrl=[self solveLinVizAngl];
 
-        
+       // VectorPrint(newVizAnrl);
         
         struct ISVector dLinAngDt=VectorMultiplyNumber(VectorMinVector(newVizAnrl, oldVizAnrl), 1/dt);
         
@@ -108,15 +114,40 @@ const CGFloat g=9.80665;
         
        // NSLog(@"%f %f",Kn,Kv);
        // VectorPrint(dLinAngDt);
-       // VectorPrint(dSVvNormDt);
+       // VectorPrint(dLinAngDt);
         
-        self.delta=ISVecrorMake(0,Kv*dLinAngDt.x+kccV*dSVvNormDt.y,
-                                Kn*dLinAngDt.y+kccn*dSVvNormDt.x);
+        
+        self.delta=ISVecrorMake(0,(_Kfi*_Kpsi*Kv*dLinAngDt.x+kccV*dSVvNormDt.y),
+                                (Kn*dLinAngDt.y+kccn*dSVvNormDt.x));
+        CGFloat deltaV=self.delta.y;
+        CGFloat deltaN=self.delta.z;
+        
+        if (self.delta.y>M_PI/12) {
+            deltaV=M_PI/12;
+        }
+        if (self.delta.y<-M_PI/12) {
+            deltaV=-M_PI/12;
+        }
+        if (self.delta.z>M_PI/12) {
+            deltaN=M_PI/12;
+        }
+        if (self.delta.z<-M_PI/12) {
+            deltaN=-M_PI/12;
+        }
+        self.delta=ISVecrorMake(0,deltaV,deltaN);
+        
+         //VectorPrint(dLinAngDt);
+      //  NSLog(@"%f",self.delta.y*180/M_PI);
+        
+       // NSLog(@"%f",self.delta.y*360/M_PI);
        // NSLog(@"%f %f",self.delta.y*180/M_PI,self.delta.z*180/M_PI);
        // NSLog(@"%f",dLinAngDt.y);
-        [self.delegat parametrsdidSelected:self];
+       // if (i%100==0) {
+             [self.delegat parametrsdidSelected:self];
+       // }
         
     }
+    NSLog(@"x %f y %f z %f", self.coordinat.x,self.coordinat.y,self.coordinat.z);
     
 }
 
@@ -191,6 +222,7 @@ const CGFloat g=9.80665;
     CGFloat my=(mW.y*_l/v)*self.w.y+My_beta*self.anglesSKsvaz.y+[self My_deltaM:Max betta:self.anglesSKsvaz.y]*self.delta.z;//?
     CGFloat mz=(mW.z*_l/v)*self.w.z+Mz_alf*self.anglesSKsvaz.x+[self Mz_deltaM:Max alfa:self.anglesSKsvaz.x]*self.delta.y;
     
+    
     struct ISVector m=ISVecrorMake(mx, my, mz);
     CGFloat ro=[[[ISTabl alloc]h:self.coordinat.y type:geomertrik] ro];
     CGFloat sm=M_PI*pow(self.dm, 2)/4;
@@ -251,10 +283,9 @@ const CGFloat g=9.80665;
 -(struct ISVector) solveLinVizAngl
 
 {
-    
     CGFloat r=pow(pow(self.cel.coordinat.x-self.coordinat.x, 2)+
                   pow(self.cel.coordinat.y-self.coordinat.y, 2)+
-                  pow(self.cel.coordinat.z-self.coordinat.z, 2), 0.5f);
+                  pow(self.cel.coordinat.z-self.coordinat.z, 2), 0.5);
     struct ISVector vItog=ISVecrorMake(asin((self.cel.coordinat.y-self.coordinat.y)/r),
                                             -atan((self.cel.coordinat.z-self.coordinat.z)/r), 0);
     
