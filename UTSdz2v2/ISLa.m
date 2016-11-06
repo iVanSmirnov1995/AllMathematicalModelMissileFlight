@@ -44,7 +44,7 @@ const CGFloat g=9.80665;
     self.vSkorSist=ISVecrorMake(v0, 0, 0);
     struct ISMartix3 matPerSKsv=[self matPerSKsv:self.anglesSKsvaz];
     self.coordinat=ISVecrorMake(0, H0, 0);
-    self.anglesSVnorm=ISVecrorMake(0, (M_PI/180)*TT0, 0);
+    self.anglesSVnorm=ISVecrorMake((M_PI/180)*0, (M_PI/180)*TT0, 0);
     self.w=ISVecrorMake(0, 0, 0);
     self.t=0.f;
     struct ISMartix3 matPerSvNorm=[self matPerSvNorm:self.anglesSVnorm];
@@ -76,7 +76,7 @@ const CGFloat g=9.80665;
         self.anglesSVnorm=[self angleByRG:self.radrigaGm];
         
         self.TTandPsi=ISVecrorMake(asin(self.vNormSist.y/VectorABS(self.vNormSist)),
-                                              atan(self.vNormSist.z/self.vNormSist.x), 0);
+                                              atan(-self.vNormSist.z/self.vNormSist.x), 0);
         
         self.t=self.t+dt;
         
@@ -110,28 +110,28 @@ const CGFloat g=9.80665;
         CGFloat Kv=(a11*a43-a13*a42)/(a12+a11*a42);
         CGFloat ksiccv=0.35;
         CGFloat kccV=0.95;
-        CGFloat Tv=1/pow(a12+a11*a42,0.5);
-        CGFloat T1v=-a13/(a13*a42-a12*a43);
-        CGFloat ksiv=(a11+a42)/(2*sqrt(a12+a11*a42));
-        CGFloat K2v=-2*Tv*(ksiv*T1v-pow(ksiccv,2)*Tv-sqrt(pow(ksiccv,2)*pow(ksiccv,2)*pow(Tv,2)-2*ksiv*pow(ksiccv,2)*Tv*
-                                                        T1v+pow(T1v,2)*pow(ksiccv,2))/(Kv*pow(T1v,2)));
+//        CGFloat Tv=1/pow(a12+a11*a42,0.5);
+//        CGFloat T1v=-a13/(a13*a42-a12*a43);
+//        CGFloat ksiv=(a11+a42)/(2*sqrt(a12+a11*a42));
+//        CGFloat K2v=-2*Tv*(ksiv*T1v-pow(ksiccv,2)*Tv-sqrt(pow(ksiccv,4)*pow(ksiccv,2)*pow(Tv,2)-2*ksiv*pow(ksiccv,2)*Tv*
+//                                                        T1v+pow(T1v,2)*pow(ksiccv,2))/(Kv*pow(T1v,2)));
         
      //   NSLog(@"%f %f %f %f %f %f %f %f",ksiccv,Tv,ksiv,ksiccv,Tv,T1v,T1v,ksiccv);
        // NSLog(@"%f %f %f %f",a13,a42,a12,a43);
       //  NSLog(@"%f",self.mZ_delta.x);
         
-        CGFloat K1v=kccV*(1+Kv*K2v)/(Kv*pow(T1v,2));
+      //  CGFloat K1v=kccV*(1+Kv*K2v)/(Kv*pow(T1v,2));
         
         CGFloat kccn=0.95;
         CGFloat ksiccn=0.35;
         CGFloat Kn=(b12*b43-b13*b42)/(b12+b11*b42);
-        CGFloat Tn=1/sqrt(b12+b11*b42);
-        CGFloat T1n=-b13/(b13*b42-b12*b43);
-        CGFloat ksin=(b11+b42)/(2*sqrt(b12+b11*b42));
-        CGFloat K2n=-2*Tn*(ksin*T1n-pow(ksiccn,2)*Tn-sqrt(pow(ksiccn,2)*pow(ksiccn,2)*pow(Tn,2)-2*ksin*pow(ksiccn,2)*Tn*
-                                                          T1n+pow(T1n,2)*pow(ksiccn,2))/(Kn*pow(T1n,2)));
-
-        CGFloat K1n=kccn*(1+Kn*K2n)/(Kn*pow(T1n,2));
+//        CGFloat Tn=1/sqrt(b12+b11*b42);
+//        CGFloat T1n=-b13/(b13*b42-b12*b43);
+//        CGFloat ksin=(b11+b42)/(2*sqrt(b12+b11*b42));
+//        CGFloat K2n=-2*Tn*(ksin*T1n-pow(ksiccn,2)*Tn-sqrt(pow(ksiccn,4)*pow(ksiccn,2)*pow(Tn,2)-2*ksin*pow(ksiccn,2)*Tn*
+//                                                          T1n+pow(T1n,2)*pow(ksiccn,2))/(Kn*pow(T1n,2)));
+//
+//        CGFloat K1n=kccn*(1+Kn*K2n)/(Kn*pow(T1n,2));
         
         
        // NSLog(@"%f %f",Kn,Kv);
@@ -141,8 +141,8 @@ const CGFloat g=9.80665;
         
         
         
-        self.delta=ISVecrorMake(0,(_Kfi*_Kpsi*K1v*dLinAngDt.x+kccV*dSVvNormDt.y),
-                                (1*1*K1n*dLinAngDt.y+kccn*dSVvNormDt.x));
+        self.delta=ISVecrorMake(0,(1000*_Kfi*_Kpsi*Kv*dLinAngDt.x+kccV*dSVvNormDt.y),
+                                (1*Kn*dLinAngDt.y+kccn*dSVvNormDt.x));
         CGFloat deltaV=self.delta.y;
         CGFloat deltaN=self.delta.z;
         
@@ -198,6 +198,9 @@ const CGFloat g=9.80665;
                                    Cy_alfa*self.anglesSKsvaz.x+[self Cy_deltaM:M alfa:self.anglesSKsvaz.x]*self.delta.y,
                                    -Cy_alfa*self.anglesSKsvaz.y+[self Cz_deltaM:M alfa:self.anglesSKsvaz.y]*self.delta.z);
     
+   // NSLog(@"угол a %f",self.anglesSKsvaz.x*180/M_PI);
+   // NSLog(@"угол b %f",vSVsist.z);
+    
     CGFloat ro=[[[ISTabl alloc]h:self.coordinat.y type:geomertrik] ro];
     CGFloat sm=M_PI*pow(self.dm, 2)/4;
     CGFloat q=ro*pow(v, 2)/2;
@@ -210,6 +213,8 @@ const CGFloat g=9.80665;
     
     
     struct ISVector F=ISVecrorMake(-C.x*q*sm, C.y*q*sm, C.z*q*sm);
+    //NSLog(@"Yz %f",self.anglesSKsvaz.y*180/M_PI);
+   // NSLog(@"Yz %f",self.anglesSKsvaz.x*180/M_PI);
     
     struct ISVector Gg=ISVecrorMake(0, -g*self.m0, 0);
     struct ISVector Fg=Martix3multiplyVector(matPerSvNorm, F);
@@ -293,9 +298,9 @@ const CGFloat g=9.80665;
 
 {
     
-    struct ISVector4 vItog=ISVecror4Make(cosl(v.x/2)*cosl(v.y/2)*cosl(v.z/2)+
+    struct ISVector4 vItog=ISVecror4Make(cosl(v.x/2)*cosl(v.y/2)*cosl(v.z/2)- ///исправ
                                  sinl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
-                                -sinl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)+
+                                 sinl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)+
                                  cosl(v.x/2)*cosl(v.y/2)*sinl(v.z/2),
                                  sinl(v.x/2)*cosl(v.y/2)*cosl(v.z/2)+
                                  cosl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
@@ -360,7 +365,7 @@ const CGFloat g=9.80665;
     matPerSvNorm.info[1][0]=sinl(v.y);
     matPerSvNorm.info[1][1]=cosl(v.y)*cosl(v.z);
     matPerSvNorm.info[1][2]=-cosl(v.y)*sinl(v.z);
-    matPerSvNorm.info[2][0]=-cosl(v.y)*sinl(v.x);
+    matPerSvNorm.info[2][0]=cosl(v.y)*sinl(v.x);
     matPerSvNorm.info[2][1]=sinl(v.y)*sinl(v.x)*cosl(v.z)+cosl(v.x)*sinl(v.z);
     matPerSvNorm.info[2][2]=-sinl(v.y)*sinl(v.x)*sinl(v.z)+cosl(v.x)*cosl(v.z);
     

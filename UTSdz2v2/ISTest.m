@@ -29,7 +29,7 @@
 //        [la startX0:0 H0:9100 vxo:1200 TT0:-55 shag:0.01];
         ISLa* la=[[ISLa alloc]createLaM0:1450 Ix:170.f Iy:640.f Iz:640.f l:9 dm:0.950 Kfi:1 Kpsi:1];
         ISCel* cel=[[ISCel alloc]init];
-        cel.coordinat=ISVecrorMake(6070, 0, 10);
+        cel.coordinat=ISVecrorMake(6100, 0, 1);
         la.cel=cel;
         la.delegat=self;
         
@@ -47,9 +47,9 @@
  //         la.TTandPsi.x*180/M_PI,la.anglesSVnorm.y*180/M_PI,la.w.z,VectorABS(la.vNormSist));
     
  //   NSLog(@"r %f fi %f ks %f ",la.r, la.lineVizAnrl.x*180/M_PI,la.lineVizAnrl.y);
-      NSLog(@"x %f y %f z %f", la.coordinat.x,la.coordinat.y,la.coordinat.z);
+      NSLog(@"x %f y %f z %f", la.coordinat.x,la.coordinat.y,la.w.y);
     
-     // VectorPrint(VectorMultiplyNumber(la.delta, 180/M_PI));
+    //  VectorPrint(VectorMultiplyNumber(la.delta, 180/M_PI));
     
 }
 
