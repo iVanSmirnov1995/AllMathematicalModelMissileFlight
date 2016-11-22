@@ -57,6 +57,9 @@
 @property(assign,nonatomic)struct ISVector Y_angle;
 @property(assign,nonatomic)struct ISVector Y_delta;
 
+@property(assign,nonatomic)struct ISVector momVec;
+
+@property(assign,nonatomic)struct ISVector pointPad;
 
 
 -(void)startX0:(CGFloat)x0 H0:(CGFloat)H0 vxo:(CGFloat)v0 TT0:(CGFloat)TT0 shag:(CGFloat)dt;
@@ -68,5 +71,7 @@
 @required
 
 -(void) parametrsdidSelected:(ISLa*)la;
+
+-(void) didEnd:(ISLa*)la;
 
 @end
