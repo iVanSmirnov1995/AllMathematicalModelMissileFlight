@@ -125,10 +125,32 @@ const CGFloat g=9.80665;
         CGFloat ksin=(b11+b42)/(2*sqrt(fabs(b12+b11*b42)));
         CGFloat K2n=-2*Tn*(ksin*T1n-pow(ksiccn,2)*Tn-sqrt(fabs(pow(ksiccn,2)*pow(ksiccn,2)*pow(Tn,2)-2*ksin*pow(ksiccn,2)*Tn*
                                                           T1n+pow(T1n,2)*pow(ksiccn,2)))/(Kn*pow(T1n,2)));
-
         CGFloat K1n=kccn*(1+Kn*K2n)/(Kn*pow(T1n,2));
         
         
+        CGFloat Tsse = 0.01;
+        CGFloat KSisse = 0.35;
+        
+        CGFloat c11 = - self.mW.x*q*sm*self.l*self.l/(self.I.x*VectorABS(self.vNormSist));
+        CGFloat c13 = - Mx_delta()/self.I.x;
+        
+        
+        CGFloat Ke =c13/c11;
+        CGFloat Te = 1/c11;
+        
+        CGFloat K1e = (2* KSisse *Te - Tsse)/(Ke*Tsse);
+        CGFloat K2e = Te/(Ke*Tsse*Tsse);
+
+        self.delEl = -K1e *self.w.x - K2e*self.anglesSVnorm.z;
+        
+      //  NSLog(@"%f %f",self.delEl,self.anglesSVnorm.z);
+        
+        if (self.delEl>M_PI/12) {
+            self.delEl=M_PI/12;
+        }
+        if (self.delEl<-M_PI/12) {
+            self.delEl=-M_PI/12;
+        }
         
         
         
@@ -154,30 +176,20 @@ const CGFloat g=9.80665;
         
         self.delta=ISVecrorMake(0,deltaV,deltaN);
         
-        // VectorPrint(dLinAngDt);
-       // NSLog(@"%f",self.delta.y*180/M_PI);
-        
-       // NSLog(@"%f",self.delta.y*360/M_PI);
-       // NSLog(@"%f %f",self.delta.y*180/M_PI,self.delta.z*180/M_PI);
-       // NSLog(@"%f",dLinAngDt.y);
-       // if (i%100==0) {
-       // }
         
         if (self.coordinat.y<0) {
             CGFloat xc=self.coordinat.x-self.coordinat.y/tan(self.TTandPsi.x);
             CGFloat zc=self.coordinat.z-self.coordinat.y*tan(self.TTandPsi.y);
             // NSLog(@"точка падения:(x= %.5f,0 ; z= %.5f,0)",xc,zc);
             self.pointPad=ISVecrorMake(xc, 0, zc);
-            [self.delegat didEnd:self];
+        }
+        if (i%10==0) {
+            
+                [self.delegat parametrsdidSelected:self];
+            
         }
         
-        [self.delegat parametrsdidSelected:self];
-
-        
-        
-        
     }
-  //  NSLog(@"x %f y %f z %f", self.coordinat.x,self.coordinat.y,self.coordinat.z);
     
 }
 
@@ -203,8 +215,6 @@ const CGFloat g=9.80665;
                                    Cy_alfa*self.anglesSKsvaz.x+[self Cy_deltaM:M alfa:self.anglesSKsvaz.x]*self.delta.y,
                                    -Cy_alfa*self.anglesSKsvaz.y+[self Cz_deltaM:M alfa:self.anglesSKsvaz.y]*self.delta.z);
     
-   // NSLog(@"угол a %f",self.anglesSKsvaz.x*180/M_PI);
-   // NSLog(@"угол b %f",vSVsist.z);
     
     CGFloat ro=[[[ISTabl alloc]h:self.coordinat.y type:geomertrik] ro];
     CGFloat sm=M_PI*pow(self.dm, 2)/4;
@@ -212,22 +222,18 @@ const CGFloat g=9.80665;
     
     CGFloat y_alfa=Cy_alfa;//*q*sm;
     CGFloat y_beta=-Cy_alfa;//*q*sm;//
-    CGFloat y_deltaV=[self Cy_deltaM:M alfa:self.anglesSKsvaz.x];//*q*sm;
-    CGFloat y_deltaN=[self Cy_deltaM:M alfa:self.anglesSKsvaz.y];//*q*sm;//
+    CGFloat y_deltaV=[self Cy_deltaM:M alfa:self.anglesSKsvaz.x];
+    CGFloat y_deltaN=[self Cy_deltaM:M alfa:self.anglesSKsvaz.y];
     
     
     
     struct ISVector F=ISVecrorMake(-C.x*q*sm, C.y*q*sm, C.z*q*sm);
-    //NSLog(@"Yz %f",self.anglesSKsvaz.y*180/M_PI);
-   // NSLog(@"Yz %f",self.anglesSKsvaz.x*180/M_PI);
     
     struct ISVector Gg=ISVecrorMake(0, -g*self.m0, 0);
     struct ISVector Fg=Martix3multiplyVector(matPerSvNorm, F);
     struct ISVector vItog=VectorMultiplyNumber(VectorPlusVector(Fg, Gg), 1/self.m0);
     
-   // self.Y_angle=ISVecrorMake(F.y/self.anglesSKsvaz.x,F.y/self.anglesSKsvaz.y,0);
     self.Y_angle=ISVecrorMake(y_alfa,y_beta,0);
-   // self.Y_delta=ISVecrorMake(F.y/self.delta.z,F.y/self.delta.y,0);
      self.Y_delta=ISVecrorMake(y_deltaV,y_deltaN,0);
     
     return vItog;
@@ -252,8 +258,8 @@ const CGFloat g=9.80665;
                                [self Mz_deltaM:Max alfa:self.anglesSKsvaz.x],//////////
                                0);
     
-    
-    
+    CGFloat Fsum=50000;
+    CGFloat Mstab=0.5*self.dm*Fsum*self.delEl;
     
     CGFloat mx=(mW.x*_l/v)*self.w.x;
     CGFloat my=(mW.y*_l/v)*self.w.y+My_beta*self.anglesSKsvaz.y+[self My_deltaM:Max betta:self.anglesSKsvaz.y]*self.delta.z;//?
@@ -267,7 +273,7 @@ const CGFloat g=9.80665;
     struct ISVector M=VectorMultiplyNumber(m, q*sm);
     self.momVec=M;
     
-    CGFloat dWxDt=M.x/_I.x-((_I.z-_I.y)/_I.x)*_w.y*_w.z;
+    CGFloat dWxDt=(M.x+Mstab)/_I.x-((_I.z-_I.y)/_I.x)*_w.y*_w.z;
     CGFloat dWyDt=M.y/_I.y-((_I.x-_I.z)/_I.y)*_w.x*_w.z;
     CGFloat dWzDt=M.z/_I.z-((_I.y-_I.x)/_I.z)*_w.y*_w.x;
     
@@ -291,7 +297,6 @@ const CGFloat g=9.80665;
 {
         CGFloat dPrgDt=-(_w.x*_radrigaGm.x2+_w.y*_radrigaGm.x3+_w.z*_radrigaGm.x4)/2;
         CGFloat dLambdaRgDt=(_w.x*_radrigaGm.x1-_w.y*_radrigaGm.x4+_w.z*_radrigaGm.x3)/2;
-   // CGFloat dLambdaRgDt=(_w.x*_radrigaGm.x4+_w.y*_radrigaGm.x1-_w.z*_radrigaGm.x3)/2; //игорь
         CGFloat dMuRgDt=(_w.x*_radrigaGm.x4+_w.y*_radrigaGm.x1-_w.z*_radrigaGm.x2)/2;//-+
         CGFloat dNuRgDt=(-_w.x*_radrigaGm.x3+_w.y*_radrigaGm.x2+_w.z*_radrigaGm.x1)/2;
         struct ISVector4 vItog=ISVecror4Make(dPrgDt, dLambdaRgDt, dMuRgDt, dNuRgDt);
@@ -314,18 +319,6 @@ const CGFloat g=9.80665;
                                          cosl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
                                          cosl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)-
                                          sinl(v.x/2)*cosl(v.y/2)*sinl(v.z/2));
-    
-    
-    
-//    struct ISVector4 vItog=ISVecror4Make(cosl(v.x/2)*cosl(v.y/2)*cosl(v.z/2)+
-//                                         sinl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
-//                                         sinl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)+
-//                                         cosl(v.x/2)*cosl(v.y/2)*sinl(v.z/2),
-//                                         sinl(v.x/2)*cosl(v.y/2)*cosl(v.z/2)+
-//                                         cosl(v.x/2)*sinl(v.y/2)*sinl(v.z/2),
-//                                         cosl(v.x/2)*sinl(v.y/2)*cosl(v.z/2)-
-//                                         sinl(v.x/2)*cosl(v.y/2)*sinl(v.z/2));
-    
     
     
     return vItog;
@@ -351,10 +344,6 @@ const CGFloat g=9.80665;
 -(struct ISVector) angleByRG:(struct ISVector4)v
 
 {
-    
-//    struct ISVector vItog=ISVecrorMake(atanl(2*(v.x1*v.x3-v.x2*v.x4)/(pow(v.x1, 2)+pow(v.x2, 2)-pow(v.x3, 2)-pow(v.x4, 2))),
-//                                        asinl(2*(v.x1*v.x4+v.x2*v.x3)),
-//                                        atanl(2*(v.x1*v.x2-v.x4*v.x3)/(pow(v.x1, 2)+pow(v.x3, 2)-pow(v.x2, 2)-pow(v.x4, 2))));
     
     struct ISVector vItog=ISVecrorMake(atanl(2*(v.x1*v.x3-v.x2*v.x4)/(pow(v.x1, 2)+pow(v.x2, 2)-pow(v.x3, 2)-pow(v.x4, 2))),
                                        asinl(2*(v.x1*v.x4+v.x2*v.x3)),
@@ -425,7 +414,6 @@ const CGFloat g=9.80665;
 	   p2 =  log(1.9773*alfa*alfa - 25.587*alfa + 83.354);
 	   p3 =  18.985*alfa*alfa - 375.76*alfa + 1471;
 	   p4 = -51.164e-3*alfa*alfa + 805.52e-3*alfa + 1.8929;
-    //NSLog(@"%f",(-p1*1e-6*M*M + p2*1e-12*exp(M) - p3*1e-6*M - p4*1e-3)*2);
 	   return (-p1*1e-6*M*M + p2*1e-12*exp(M) - p3*1e-6*M - p4*1e-3)*2;
 };
 
@@ -435,5 +423,10 @@ const CGFloat g=9.80665;
     return -[self Cy_deltaM:M alfa:alfa];
 };
 
+double Mx_delta()
+{
+    double p = 1000.0;
+    return -p;
+};
 
 @end
